@@ -1,14 +1,21 @@
 "use client";
 
-import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
-import Link from "next/link";
+import {
+  LogOut,
+  Moon,
+  // Settings,
+  Sun,
+  // User
+} from "lucide-react";
+// import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  // DropdownMenuLabel,
+  // DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
@@ -18,6 +25,12 @@ import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const { toggleSidebar } = useSidebar();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    router.push("/login");
+  };
   return (
     <nav className="p-4 flex items-center justify-between sticky top-0 bg-background z-10">
       {/* LEFT */}
@@ -27,7 +40,7 @@ const Navbar = () => {
       </Button> */}
       {/* RIGHT */}
       <div className="flex items-center gap-4">
-        <Link href="/">Dashboard</Link>
+        {/* <Link href="/">Dashboard</Link> */}
         {/* THEME MENU */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -58,7 +71,7 @@ const Navbar = () => {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={10}>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            {/* <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <User className="h-[1.2rem] w-[1.2rem] mr-2" />
@@ -67,8 +80,8 @@ const Navbar = () => {
             <DropdownMenuItem>
               <Settings className="h-[1.2rem] w-[1.2rem] mr-2" />
               Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">
+            </DropdownMenuItem> */}
+            <DropdownMenuItem variant="destructive" onClick={handleLogout}>
               <LogOut className="h-[1.2rem] w-[1.2rem] mr-2" />
               Logout
             </DropdownMenuItem>
