@@ -36,7 +36,7 @@ export function DataTable<TData, TValue>({
   const fetchData = useCallback(
     async (page: number) => {
       const res = await fetch(
-        `http://147.93.96.111:3000/api/lead?limit=5&page=${page + 1}&sort=-createdAt`,
+        `https://147.93.96.111:3000/api/lead?limit=5&page=${page + 1}&sort=-createdAt`,
         {
           headers: {
             version: "1",

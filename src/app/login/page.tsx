@@ -10,8 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormdata] = useState({
     email: "",
     password: "",
@@ -26,10 +28,11 @@ export default function LoginPage() {
   };
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await fetch(
-        "http://147.93.96.111:3000/api/authentication/login",
+        "https://147.93.96.111:3000/api/authentication/login",
         {
           method: "POST",
           headers: {
@@ -50,7 +53,7 @@ export default function LoginPage() {
         if (token) {
           // ✅ Set cookie client-side
           document.cookie = `token=${token}; path=/; secure; samesite=strict`;
-
+          toast.success("Login successful!");
           // Redirect to dashboard
           router.push("/dashboard");
         } else {
@@ -61,6 +64,9 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error("Error:", error);
+      toast.error("Somthing went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,7 +104,7 @@ export default function LoginPage() {
               />
             </div>
             <Button className="w-full bg-black hover:bg-gray-800" type="submit">
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
         </CardContent>
