@@ -32,7 +32,7 @@ export default function LoginPage() {
 
     try {
       const response = await fetch(
-        "https://147.93.96.111:3000/api/authentication/login",
+        "http://147.93.96.111:3000/api/authentication/login",
         {
           method: "POST",
           headers: {
@@ -54,13 +54,16 @@ export default function LoginPage() {
           // ✅ Set cookie client-side
           document.cookie = `token=${token}; path=/; secure; samesite=strict`;
           toast.success("Login successful!");
+          
           // Redirect to dashboard
           router.push("/dashboard");
+          console.log("redirect")
         } else {
           console.error("No token received.");
         }
       } else {
         console.error("Login failed:", data);
+        toast.error(data.message);
       }
     } catch (error) {
       console.error("Error:", error);
