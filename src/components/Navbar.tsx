@@ -21,15 +21,22 @@ import {
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const { toggleSidebar } = useSidebar();
   const router = useRouter();
 
-  const handleLogout = () => {
-    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    router.push("/login");
+  const handleLogout = async () => {
+    const res = await fetch("/api/auth/logout", { method: "POST" });
+
+    if (res.ok) {
+      toast.success("Logged out");
+      router.push("/login");
+    } else {
+      toast.error("Failed to logout");
+    }
   };
   return (
     <nav className="p-4 flex items-center justify-between sticky top-0 bg-background z-10">

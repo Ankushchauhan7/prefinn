@@ -8,66 +8,43 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function LoginPage() {
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [formData, setFormdata] = useState({
-    email: "",
-    password: "",
-  });
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormdata((perv) => ({
-      ...perv,
-      [id]: value,
-    }));
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://147.93.96.111:3000/api/authentication/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Basic " + btoa(`${formData.email}:${formData.password}`),
-          },
-        }
-      );
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (response.ok) {
-        const token =
-          response.headers.get("authorization") ||
-          response.headers.get("Authorization");
-
-        if (token) {
-          // ✅ Set cookie client-side
-          document.cookie = `token=${token}; path=/; secure; samesite=strict`;
-          toast.success("Login successful!");
-          
-          // Redirect to dashboard
+      if (res.ok) {
+        toast.success("Login successful!");
+        startTransition(() => {
           router.push("/dashboard");
-          console.log("redirect")
-        } else {
-          console.error("No token received.");
-        }
+        });
       } else {
-        console.error("Login failed:", data);
-        toast.error(data.message);
+        toast.error(data.message || "Login failed");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("Somthing went wrong");
+    } catch (err) {
+      toast.error("An error occurred");
     } finally {
       setLoading(false);
     }
@@ -106,8 +83,8 @@ export default function LoginPage() {
                 onChange={handleChange}
               />
             </div>
-            <Button className="w-full bg-black hover:bg-gray-800" type="submit">
-              {loading ? "Signing In..." : "Sign In"}
+            <Button type="submit" className="w-full bg-black hover:bg-gray-800">
+              {loading || isPending ? "Signing in..." : "Sign In"}
             </Button>
           </form>
         </CardContent>
